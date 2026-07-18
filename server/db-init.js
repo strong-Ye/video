@@ -19,12 +19,13 @@ async function init() {
 
   console.log('✓ MySQL 连接成功');
 
-  // 执行 schema.sql
+  // 执行 schema.sql — 先去掉注释行再按 ; 分割
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
-  const statements = schema
+  const cleanSchema = schema.split('\n').filter(line => !line.trim().startsWith('--')).join('\n');
+  const statements = cleanSchema
     .split(';')
     .map(s => s.trim())
-    .filter(s => s.length > 0 && !s.startsWith('--'));
+    .filter(s => s.length > 0);
 
   for (const sql of statements) {
     try { await conn.query(sql); } catch(e) {
